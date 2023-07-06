@@ -16,7 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('phone')->unique();
+            $table->date('dob');
             $table->tinyInteger('gender');
+            $table->tinyInteger('status')->default(2);
+            $table->string('profile_image');
             $table->rememberToken();
             $table->timestamps();
         });

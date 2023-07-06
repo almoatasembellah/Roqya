@@ -19,6 +19,8 @@ class UpdateProfileRequest extends FormRequest
 
             'email' => ['required' , 'email' , Rule::unique('users')->ignore($this->user()->id)],
 
+            'profile_image' => ['image|mimes:jpeg,png,jpg|max:2048'],
+
         ];
     }
 }

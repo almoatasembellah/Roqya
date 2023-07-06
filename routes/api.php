@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -15,15 +16,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
-
-Route::group(['middleware' => 'auth:sanctum'], static function () {
-
+Route::post('/auth/therapist/login', [AuthController::class, 'therapistLogin'])->name('Therapist-login');
 //Auth routes
-    Route::post('/change-password', [AuthController::class, 'changePassword']);
-    Route::put('/update-profile', [ProfileController::class, 'update']);
-    Route::get('/show-profile', [ProfileController::class, 'show']);
-    Route::post('/logout', [AuthController::class, 'logout']);
 
-});
+//User routes
+Route::post('/auth/login', [AuthController::class, 'userLogin'])->name('login');
+Route::post('/change-password', [AuthController::class, 'changePassword']);
+Route::put('/update-profile', [ProfileController::class, 'update'])->middleware('auth:sanctum');
+Route::get('/show-profile', [ProfileController::class, 'profile'])->middleware('auth:sanctum');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+
+//Admin routes
+Route::post('/admin/login', [AdminController::class, 'adminLogin'])->name('admin.login-admin');
+Route::get('/get-users', [AdminController::class, 'getAllUsers'])->middleware('auth:api');
+Route::post('/admin/change-status', [AdminController::class, 'changeStatus'])->middleware('auth:api');
+Route::post('/admin/logout', [AdminController::class, 'adminLogout'])->middleware('auth:api');
 

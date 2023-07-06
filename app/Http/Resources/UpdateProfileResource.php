@@ -5,17 +5,21 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class UpdateProfileResource extends JsonResource
 {
-
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
-        return array_filter([
+        return [
             'id' => $this['id'],
             'name' => $this['name'],
             'email' => $this['email'],
             'gender' => $this['gender'],
             'profile_image' => $this['profile_image'],
-        ]);
+        ];
     }
 }

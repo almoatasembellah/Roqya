@@ -21,6 +21,10 @@ class RegisterRequest extends FormRequest
 
             'password' => ['required', 'min:8'],
 
+            'phone' => ['required', 'string', 'min:11'],
+
+            'dob' => ['required', 'date', 'date_format:Y-m-d'],
+
             'gender' => ['required', 'in:0,1'],
         ];
     }
