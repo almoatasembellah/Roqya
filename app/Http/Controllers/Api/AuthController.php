@@ -93,115 +93,115 @@ class AuthController extends Controller
         }
 
         //Google Auth
-    public function auth(Request $request)
-    {
-        $rules = [
-            "device_id" => ['required'],
-            //"device_token" => ['required'],
-
-            "provider_id" => [Rule::requiredIf($request->uid == null && $request->phone == null), 'numeric'],
-            "provider_name" => [Rule::requiredIf($request->provider_id != null), 'string', 'in:facebook,google'],
-            "name" => [Rule::requiredIf($request->provider_id != null && !User::where('provider_id', $request->provider_id)->where('provider_name', $request->provider_name)->exists()), 'min:3','max:20'],
-            "email" => ['required', 'email'],
-            "profile_image" => Rule::requiredIf($request->provider_id != null && !User::where('provider_id', $request->provider_id)->where('provider_name', $request->provider_name)->exists()),
-
-            "uid" => Rule::requiredIf($request->provider_id == null && $request->phone == null),
-            "password" => Rule::requiredIf($request->uid != null),
-
-            "phone" => Rule::requiredIf($request->uid == null && $request->provider_id == null),
-
-            "country_code" => ['required', 'min:2', 'max:2'],
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-        if($validator->fails()) {
-            return $this->validationError(422, 'The given data was invalid.', $validator);
-        }
-
-        if($request->provider_name !== null){
-
-            try{
-                $user = User::firstOrCreate(
-                    ['provider_id' => $request->provider_id, 'provider_name' => $request->provider_name],
-
-                    [
-                        'provider_id' => $request->provider_id,
-                        'provider_name' => $request->provider_name,
-                        'name' => $request->name,
-                        'email' => $request->email,
-                        'profile_picture' => $request->profile_image,
-                        'device_id' => $request->device_id,
-                        //'device_token' => $request->device_token,
-                        //'password' => $this->generateDefaultPassword(),
-                        'uid' => $this->generateUID(),
-                        'phone' => $request->phone,
-                        'country_code' => $request->country_code,
-                        'level_id' => 1,
-                    ],
-                );
-            }catch(QueryException $e){
-                // return $e;
-                return $this->error500();
-            }
-        }elseif($request->phone !== null){
-            try{
-
-                $user = User::firstOrCreate(
-                    ['phone' => $request->phone, 'device_id' => $request->device_id],
-
-                    [
-                        'provider_id' => $request->provider_id,
-                        'provider_name' => $request->provider_name,
-                        'name' => $request->name,
-                        'email' => $request->email,
-                        'profile_picture' => $request->profile_image,
-                        'device_id' => $request->device_id,
-                        //'device_token' => $request->device_token,
-                        //'password' => $this->generateDefaultPassword(),
-                        'uid' => $this->generateUID(),
-                        'phone' => $request->phone,
-                        'country_code' => $request->country_code,
-                        'level_id' => 1,
-                    ],
-                );
-            }catch(QueryException $e){
-                // return $e;
-                return $this->error500();
-            }
-        }elseif($request->uid !== null){
-            $userObj = User::where('uid', $request->uid);
-
-            if(!$userObj->exists()){
-                return $this->error('عضو غير مسجل', 403);
-            }
-
-            $userObj = $userObj->first();
-            if(Hash::check($request->password, $userObj->password)){
-                $user = $userObj;
-            }else{
-                return $this->error('كلمة المرور خاطئة', 403);
-            }
-        }
-
-        /* Check if user is blocked */
-        $today = Carbon::today();
-        if($user->deactivated_until >= $today){
-            if($user->deactivated_until === '1-1-3099'){
-                return $this->error('عفوا، هذا الحساب محظور بشكل دائم.', 401);
-            }
-            return $this->error('عفوا، هذا الحساب محظور حتى تاريخ: '.$user->deactivated_until, 401);
-        }
-
-
-        $token = auth()->login($user);
-
-        //Handle First Time login to continue info with phone Register
-        $firstTime = false;
-        if($user->created_at == now()){
-            $firstTime = true;
-        }
-
-        $data = ['token' => $token, 'first_time' => $firstTime];
-        return $this->data($data, 'Hello Buddy :)');
-    }
+//    public function googleauth(Request $request)
+//    {
+//        $rules = [
+//            "device_id" => ['required'],
+//            //"device_token" => ['required'],
+//
+//            "provider_id" => [Rule::requiredIf($request->phone == null), 'numeric'],
+//            "provider_name" => [Rule::requiredIf($request->provider_id != null), 'string', 'in:facebook,google'],
+//            "name" => [Rule::requiredIf($request->provider_id != null && !User::where('provider_id', $request->provider_id)->where('provider_name', $request->provider_name)->exists()), 'min:3','max:20'],
+//            "email" => ['required', 'email'],
+//            "profile_image" => Rule::requiredIf($request->provider_id != null && !User::where('provider_id', $request->provider_id)->where('provider_name', $request->provider_name)->exists()),
+//
+//            "uid" => Rule::requiredIf($request->provider_id == null && $request->phone == null),
+//            "password" => Rule::requiredIf($request->uid != null),
+//
+//            "phone" => Rule::requiredIf($request->uid == null && $request->provider_id == null),
+//
+//            "country_code" => ['required', 'min:2', 'max:2'],
+//        ];
+//
+//        $validator = Validator::make($request->all(), $rules);
+//        if($validator->fails()) {
+//            return $this->validationError(422, 'The given data was invalid.', $validator);
+//        }
+//
+//        if($request->provider_name !== null){
+//
+//            try{
+//                $user = User::firstOrCreate(
+//                    ['provider_id' => $request->provider_id, 'provider_name' => $request->provider_name],
+//
+//                    [
+//                        'provider_id' => $request->provider_id,
+//                        'provider_name' => $request->provider_name,
+//                        'name' => $request->name,
+//                        'email' => $request->email,
+//                        'profile_picture' => $request->profile_image,
+//                        'device_id' => $request->device_id,
+//                        //'device_token' => $request->device_token,
+//                        //'password' => $this->generateDefaultPassword(),
+//                        'uid' => $this->generateUID(),
+//                        'phone' => $request->phone,
+//                        'country_code' => $request->country_code,
+//                        'level_id' => 1,
+//                    ],
+//                );
+//            }catch(QueryException $e){
+//                // return $e;
+//                return $this->error500();
+//            }
+//        }elseif($request->phone !== null){
+//            try{
+//
+//                $user = User::firstOrCreate(
+//                    ['phone' => $request->phone, 'device_id' => $request->device_id],
+//
+//                    [
+//                        'provider_id' => $request->provider_id,
+//                        'provider_name' => $request->provider_name,
+//                        'name' => $request->name,
+//                        'email' => $request->email,
+//                        'profile_picture' => $request->profile_image,
+//                        'device_id' => $request->device_id,
+//                        //'device_token' => $request->device_token,
+//                        //'password' => $this->generateDefaultPassword(),
+//                        'uid' => $this->generateUID(),
+//                        'phone' => $request->phone,
+//                        'country_code' => $request->country_code,
+//                        'level_id' => 1,
+//                    ],
+//                );
+//            }catch(QueryException $e){
+//                // return $e;
+//                return $this->error500();
+//            }
+//        }elseif($request->uid !== null){
+//            $userObj = User::where('uid', $request->uid);
+//
+//            if(!$userObj->exists()){
+//                return $this->error('عضو غير مسجل', 403);
+//            }
+//
+//            $userObj = $userObj->first();
+//            if(Hash::check($request->password, $userObj->password)){
+//                $user = $userObj;
+//            }else{
+//                return $this->error('كلمة المرور خاطئة', 403);
+//            }
+//        }
+//
+//        /* Check if user is blocked */
+//        $today = Carbon::today();
+//        if($user->deactivated_until >= $today){
+//            if($user->deactivated_until === '1-1-3099'){
+//                return $this->error('عفوا، هذا الحساب محظور بشكل دائم.', 401);
+//            }
+//            return $this->error('عفوا، هذا الحساب محظور حتى تاريخ: '.$user->deactivated_until, 401);
+//        }
+//
+//
+//        $token = auth()->login($user);
+//
+//        //Handle First Time login to continue info with phone Register
+//        $firstTime = false;
+//        if($user->created_at == now()){
+//            $firstTime = true;
+//        }
+//
+//        $data = ['token' => $token, 'first_time' => $firstTime];
+//        return $this->data($data, 'Hello Buddy :)');
+//    }
 }

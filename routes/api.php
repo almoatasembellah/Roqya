@@ -19,6 +19,12 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/therapist/login', [AuthController::class, 'therapistLogin'])->name('Therapist-login');
 //Auth routes
 
+//facebook routes
+Route::controller(FacebookController::class)->group(function(){
+    Route::get('auth/facebook', 'redirectToFacebook')->name('auth.facebook');
+    Route::get('auth/facebook/callback', 'handleFacebookCallback');
+});
+
 //User routes
 Route::post('/auth/login', [AuthController::class, 'userLogin'])->name('login');
 Route::post('/change-password', [AuthController::class, 'changePassword']);

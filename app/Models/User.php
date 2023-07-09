@@ -31,6 +31,11 @@ class User extends Authenticatable
         'gender',
         'status',
         'profile_image',
+        'facebook_id',
+//        'provider_id',
+//        'provider_name',
+//        'uid',
+//        'country_code',
     ];
 
     /**
