@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('dob');
             $table->tinyInteger('gender');
             $table->tinyInteger('status')->default(2);
-            $table->string('profile_image');
+            $table->string('profile_image')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

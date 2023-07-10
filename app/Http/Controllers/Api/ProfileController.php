@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Requests\UploadImageRequest;
 use App\Http\Resources\UpdateProfileResource;
 use App\Http\Resources\UserResource;
 use App\Http\Traits\HandleApi;
@@ -42,9 +43,23 @@ class ProfileController extends Controller
     }
 
 
-    public function setProfileImageAttribute($value)
+    public function uploadProfileImage(UploadImageRequest $request): JsonResponse
     {
-        $this->attributes['profile_image'] = Storage::disk('public')->put('profile_images', $value);
+        $imagePath = $request->file('profile_image')?->store('users', 'public');
+
+        $request->user()->update([
+            'profile_image' => $imagePath
+        ]);
+        return $this->sendResponse([], 'Profile Image is changed Successfully');
+    }
+
+    public function deleteProfileImage(Request $request)
+    {
+        $request->user()->update([
+            'profile_image' => 'user.png'
+        ]);
+
+        return $this->sendResponse([], 'Profile Image is deleted Successfully');
     }
 
 
