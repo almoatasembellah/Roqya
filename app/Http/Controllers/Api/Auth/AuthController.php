@@ -23,6 +23,8 @@ class AuthController extends Controller
 
         $input['password'] = Hash::make($input['password']);
 
+        $input['profile_image'] = 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+
         $user = User::create($input);
 
         $data['token'] =  $user->createToken('Roqya')->plainTextToken;
