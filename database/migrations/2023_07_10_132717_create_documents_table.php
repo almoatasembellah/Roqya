@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->string('personal_pic');
-            $table->string('national_id_pic');
+//            $table->string('personal_pic');
+//            $table->string('national_id_pic');
             $table->string('cv_file');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();

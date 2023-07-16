@@ -10,7 +10,7 @@ class UserResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $profileImageUrl = $this['profile_image'] === 'user.png' ? asset('images/user.png') : asset("storage/{$this['profile_image']}");
+        $profileImageUrl = $this['profile_image'] === 'default-image-profile.png' ? asset('images/default-image-profile.png') : asset("storage/{$this['profile_image']}");
 
         return array_filter([
             'id' => $this['id'],

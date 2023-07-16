@@ -11,7 +11,10 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Laravolt\Avatar\Avatar;
 
 class AuthController extends Controller
 {
@@ -23,7 +26,14 @@ class AuthController extends Controller
 
         $input['password'] = Hash::make($input['password']);
 
-        $input['profile_image'] = 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+        // Check if profile_image is provided in the request
+        if (!$request->has('profile_image')) {
+            $defaultImagePath = public_path('img/default-profile-image.png');
+            $profileImagePath = 'profile_images/' . uniqid() . '.png';
+            Storage::put($profileImagePath, File::get($defaultImagePath));
+
+            $input['profile_image'] = $profileImagePath;
+        }
 
         $user = User::create($input);
 
@@ -32,8 +42,9 @@ class AuthController extends Controller
         $data['name'] =  $user->name;
 
         return $this->sendResponse($data, 'You register successfully.');
-
     }
+
+
 
     public function userLogin(LoginRequest $request): JsonResponse
     {
@@ -74,19 +85,19 @@ class AuthController extends Controller
                 return $this->sendError('Error', 'Old Password Doesn\'t match!', 400);
             }
 
-        #Update the new Password
-        User::whereId(auth()->user()->id)->update([
-            'password' => Hash::make($request->get('new_password'))
-        ]);
+            #Update the new Password
+            User::whereId(auth()->user()->id)->update([
+                'password' => Hash::make($request->get('new_password'))
+            ]);
 
-        return $this->sendResponse([], 'Password changed successfully!');
-        }
+            return $this->sendResponse([], 'Password changed successfully!');
+            }
 
-        public function logout(Request $request): JsonResponse
-        {
-            $request->user()->tokens()->delete();
-            return $this->sendResponse([], 'You have logged out Successfully');
-        }
+            public function logout(Request $request): JsonResponse
+            {
+                $request->user()->tokens()->delete();
+                return $this->sendResponse([], 'You have logged out Successfully');
+            }
 
         //Google Auth
 //    public function googleauth(Request $request)

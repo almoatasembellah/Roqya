@@ -41,7 +41,7 @@ Route::group(['middleware' => ['web']],function(){
 
 //User routes
 Route::post('/auth/login', [AuthController::class, 'userLogin'])->name('login');
-Route::post('/change-password', [AuthController::class, 'changePassword']);
+Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 Route::get('/show-profile', [ProfileController::class, 'profile'])->middleware('auth:sanctum');
 Route::put('/update-profile', [ProfileController::class, 'update'])->middleware('auth:sanctum');
 Route::post('/upload-profile-image', [ProfileController::class, 'uploadProfileImage'])->middleware('auth:sanctum');
