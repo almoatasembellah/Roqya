@@ -55,11 +55,14 @@ class ProfileController extends Controller
 
     public function deleteProfileImage(Request $request)
     {
+        $defaultImagePath = 'img/default-profile-image.png';
+
+        // Update the authenticated user's profile_image field to the default image path
         $request->user()->update([
-            'profile_image' => 'user.png'
+            'profile_image' => $defaultImagePath
         ]);
 
-        return $this->sendResponse([], 'Profile Image is deleted Successfully');
+        return $this->sendResponse([], 'Profile Image is deleted and reverted to the default Successfully');
     }
 
 
