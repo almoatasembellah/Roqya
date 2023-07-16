@@ -30,7 +30,7 @@ class AuthController extends Controller
         if (!$request->has('profile_image')) {
             $defaultImagePath = public_path('img/default-profile-image.png');
             $profileImagePath = 'profile_images/' . uniqid() . '.png';
-            Storage::put($profileImagePath, File::get($defaultImagePath));
+            Storage::put('public/' . $profileImagePath, File::get($defaultImagePath));
 
             $input['profile_image'] = $profileImagePath;
         }
