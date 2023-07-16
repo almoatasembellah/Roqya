@@ -21,7 +21,7 @@ class UpdateProfileRequest extends FormRequest
 
             'profile_image' => ['image|mimes:jpeg,png,jpg|max:2048'],
 
-            'phone' => ['required' , 'phone'],
+            'phone' => ['required'],
         ];
     }
 }
