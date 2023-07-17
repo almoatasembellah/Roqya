@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\General\Controller;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;

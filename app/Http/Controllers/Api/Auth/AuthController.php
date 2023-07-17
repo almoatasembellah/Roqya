@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\ChangePasswordRequest;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
+use App\Http\Controllers\General\Controller;
+use App\Http\Requests\User\ChangePasswordRequest;
+use App\Http\Requests\User\LoginRequest;
+use App\Http\Requests\User\RegisterRequest;
 use App\Http\Traits\HandleApi;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Laravolt\Avatar\Avatar;
 
 class AuthController extends Controller
 {

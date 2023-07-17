@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateProfileRequest;
-use App\Http\Requests\UploadImageRequest;
+use App\Http\Controllers\General\Controller;
+use App\Http\Requests\User\UpdateProfileRequest;
+use App\Http\Requests\User\UploadImageRequest;
 use App\Http\Resources\UpdateProfileResource;
 use App\Http\Resources\UserResource;
 use App\Http\Traits\HandleApi;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Storage;

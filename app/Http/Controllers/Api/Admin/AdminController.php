@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
+use App\Http\Controllers\General\Controller;
+use App\Http\Requests\User\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Traits\HandleApi;
 use App\Models\User;
