@@ -57,7 +57,7 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($request->input('id'));
 
-        if (Auth::user()->status === User::ADMIN && $user->id === Auth::user()->id) {
+        if (Auth::user()->status === User::ADMIN || $user->id === Auth::user()->id) {
             return $this->sendError('error', 'You cannot change your own status.');
         }
 
