@@ -19,6 +19,15 @@ class AuthController extends Controller
 {
     use HandleApi;
 
+    public function me()
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return $this->sendError('Unauthorized', 'You are not logged in.');
+        }
+        return $this->sendResponse([$user],'success');
+    }
+
     public function register(RegisterRequest $request): JsonResponse
     {
         $input = $request->validate($request->rules());

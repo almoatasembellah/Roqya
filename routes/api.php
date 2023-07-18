@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //Auth routes
+Route::get('/auth/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 Route::post('/auth/register', [AuthController::class, 'register']);
 
 //Google routes
