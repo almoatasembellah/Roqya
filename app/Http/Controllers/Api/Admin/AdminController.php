@@ -56,12 +56,19 @@ class AdminController extends Controller
     public function changeStatus(Request $request)
     {
         $user = User::findOrFail($request->input('id'));
+
+        if (Auth::user()->status === User::ADMIN && $user->id === Auth::user()->id) {
+            return $this->sendError('error', 'You cannot change your own status.');
+        }
+
         if (Auth::user()->status != User::ADMIN){
             return $this->sendError('error','You\'re not authorized to perform this action');
         }
+
         $this->validate($request,[
            'status' => 'required|integer|in:' . User::THERAPIST . ',' . User::USER,
         ]);
+
         $user->status = $request->input('status');
         $user->save();
 
