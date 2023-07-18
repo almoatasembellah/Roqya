@@ -57,21 +57,22 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($request->input('id'));
 
-        if (Auth::user()->status === User::ADMIN || $user->id === Auth::user()->id) {
+        if (Auth::user()->status === User::ADMIN && $user->id === Auth::user()->id) {
             return $this->sendError('error', 'You cannot change your own status.');
         }
 
-        if (Auth::user()->status != User::ADMIN){
-            return $this->sendError('error','You\'re not authorized to perform this action');
+        if (Auth::user()->status !== User::ADMIN) {
+            return $this->sendError('error', 'You\'re not authorized to perform this action');
         }
 
-        $this->validate($request,[
-           'status' => 'required|integer|in:' . User::THERAPIST . ',' . User::USER,
+        $this->validate($request, [
+            'status' => 'required|integer|in:' . User::THERAPIST . ',' . User::USER,
         ]);
 
         $user->status = $request->input('status');
         $user->save();
 
-        return $this->sendResponse([],'Status changed successfully');
+        return $this->sendResponse([], 'Status changed successfully');
     }
+
 }
