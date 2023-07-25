@@ -23,10 +23,10 @@ class UserResource extends JsonResource
             'phone' => $this['phone'],
         ];
 
-        if ($this['status'] === User::THERAPIST) {
-            $data['overall_rating'] = $this['overall_rating'];
-            $data['rate'] = $this['rate'];
-        }
+//        if ($this['status'] === User::THERAPIST) {
+//            $data['overall_rating'] = $this['overall_rating'];
+//            $data['rate'] = $this['rate'];
+//        }
 
         return array_filter($data);
     }

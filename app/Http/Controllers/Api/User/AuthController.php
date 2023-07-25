@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Auth;
+namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\General\Controller;
 use App\Http\Requests\User\ChangePasswordRequest;
@@ -84,28 +84,6 @@ class AuthController extends Controller
 
             return $this->sendError('Unauthorized','This email or password is wrong for therapist.');
         }
-
-
-        public function changePassword(ChangePasswordRequest $request)
-        {
-            #Match The Old Password
-            if (!Hash::check($request->get('old_password'), auth()->user()->password)) {
-                return $this->sendError('Error', 'Old Password Doesn\'t match!', 400);
-            }
-
-            #Update the new Password
-            User::whereId(auth()->user()->id)->update([
-                'password' => Hash::make($request->get('new_password'))
-            ]);
-
-            return $this->sendResponse([], 'Password changed successfully!');
-            }
-
-            public function logout(Request $request): JsonResponse
-            {
-                $request->user()->tokens()->delete();
-                return $this->sendResponse([], 'You have logged out Successfully');
-            }
 
         //Google Auth
 //    public function googleauth(Request $request)

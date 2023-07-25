@@ -2,12 +2,11 @@
 
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Admin\DocumentController;
-use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\Auth\FacebookController;
-use App\Http\Controllers\Api\Auth\GoogleController;
-use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\Therapist\ConclaveController;
 use App\Http\Controllers\Api\Therapist\TherapistController;
+use App\Http\Controllers\Api\User\AuthController;
+use App\Http\Controllers\Api\User\GoogleController;
+use App\Http\Controllers\Api\User\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,13 +34,17 @@ Route::group(['middleware' => ['web']],function() {
 
 //User routes
 Route::post('/auth/login', [AuthController::class, 'userLogin'])->name('login');
-Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
-Route::get('/show-profile', [ProfileController::class, 'profile'])->middleware('auth:sanctum');
-Route::put('/update-profile', [ProfileController::class, 'update'])->middleware('auth:sanctum');
-Route::post('/upload-profile-image', [ProfileController::class, 'uploadProfileImage'])->middleware('auth:sanctum');
-Route::delete('/delete-profile-image', [ProfileController::class, 'deleteProfileImage'])->middleware('auth:sanctum');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::post('/documents', [DocumentController::class, 'store'])->middleware('auth:sanctum');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/change-password', [ProfileController::class, 'changePassword']);
+    Route::get('/show-profile', [ProfileController::class, 'profile']);
+    Route::put('/update-profile', [ProfileController::class, 'update']);
+    Route::post('/upload-profile-image', [ProfileController::class, 'uploadProfileImage']);
+    Route::delete('/delete-profile-image', [ProfileController::class, 'deleteProfileImage']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/documents', [DocumentController::class, 'store']);
+    Route::get('/search-conclave', [ConclaveController::class, 'search']);
+});
 
 
 //Admin routes
@@ -62,11 +65,15 @@ Route::get('/therapist-profile', [TherapistController::class, 'therapistProfile'
     //conclave routes
     Route::post('/create-conclave', [ConclaveController::class, 'store']);
     Route::get('/all-conclaves', [ConclaveController::class, 'index']);
+    Route::get('/my-conclaves', [ConclaveController::class, 'ownConclaves']);
     Route::get('/specific-conclaves',[ConclaveController::class, 'getTherapistConclaves']);
+    Route::put('/conclaves/{id}', [ConclaveController::class, 'update']);
+    Route::delete('/conclaves/{id}', [ConclaveController::class, 'destroy']);
 });
-Route::get('/conclaves/top-rated', [ConclaveController::class, 'topRated']);
-Route::get('/conclaves/upcoming', [ConclaveController::class, 'upcoming']);
-Route::get('/conclaves/newest', [ConclaveController::class, 'newest']);
+
+//Route::get('/conclaves/top-rated', [ConclaveController::class, 'topRated']);
+//Route::get('/conclaves/upcoming', [ConclaveController::class, 'upcoming']);
+//Route::get('/conclaves/newest', [ConclaveController::class, 'newest']);
 
 
 //facebook routes

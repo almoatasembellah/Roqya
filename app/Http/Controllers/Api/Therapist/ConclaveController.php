@@ -8,6 +8,7 @@ use App\Http\Resources\ConclaveResource;
 use App\Http\Traits\HandleApi;
 use App\Models\Conclave;
 use App\Models\Rating;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -26,7 +27,6 @@ class ConclaveController extends Controller
     {
         $validatedData = $request->validated();
 
-        //image
         if ($request->has('image')){
             $imagePath = Storage::disk('public')->put('conclave_images', $request->file('image'));
             $validatedData['image'] = $imagePath;
@@ -34,17 +34,28 @@ class ConclaveController extends Controller
         $conclave = Auth::user()->conclaves()->create($validatedData);
 
         //Rating
-        if ($request->has('rating')) {
-            Rating::create([
-                'conclave_id' => $conclave->id,
-                'user_id' => $request->user()->id,
-                'rating' => $request->input('rating')
-            ]);
-        }
-
+//        if ($request->has('rating')) {
+//            Rating::create([
+//                'conclave_id' => $conclave->id,
+//                'user_id' => $request->user()->id,
+//                'rating' => $request->input('rating')
+//            ]);
+//        }
         return $this->sendResponse(ConclaveResource::make($conclave) ,'Your Conclave has been created successfully');
     }
+    // show own therapist conclaves
+    public function ownConclaves()
+    {
+        $user = Auth::user();
+        if (!$user || $user->status !== User::THERAPIST){
+            return $this->sendError('Unauthorized', 'Please Make sure of your credentials');
+        }
+        $conclaves = $user->conclaves;
+        return $this->sendResponse(ConclaveResource::collection($conclaves),'Your Conclaves fetched Successfully');
+    }
 
+
+    //by passing id in the body
     public function getTherapistConclaves (Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -59,57 +70,30 @@ class ConclaveController extends Controller
         return $this->sendResponse(ConclaveResource::collection($conclaves),'Your Conclaves are fetched only');
     }
 
-
-    public function rateConclave(Request $request, Conclave $conclave)
+    public function search(Request $request)
     {
-        $user = $request->user();
+        $query = $request->input('query');
 
-        // Check if the user is the participant of the conclave
-        if (!$conclave->users->contains($user->id)) {
-            return response()->json(['message' => 'You are not authorized to rate this conclave'], 403);
-        }
+        $conclaves = Conclave::where('name', 'like', "%$query%")->orWhereHas('user', function ($query) use ($query) {$query->where('name', 'like', "%$query%");})->get();
 
-        // Check if the user has already rated this conclave
-        if ($conclave->ratings->where('user_id', $user->id)->count() > 0) {
-            return response()->json(['message' => 'You have already rated this conclave'], 400);
-        }
-
-        // Validate the user's rating input
-        $request->validate([
-            'rating' => 'required|integer|between:1,5',
-        ]);
-
-        // Create the new rating
-        $rating = new Rating([
-            'user_id' => $user->id,
-            'conclave_id' => $conclave->id,
-            'rating' => $request->input('rating'),
-        ]);
-        $rating->save();
-
-        // Calculate the overall rating for the therapist
-        $this->calculateOverallRating($conclave);
-
-        return response()->json(['message' => 'Conclave rated successfully']);
+        return $this->sendResponse(ConclaveResource::collection($conclaves), 'Search results.');
     }
 
 
-
-    //Overall Rating
-    public function calculateOverallRating(Conclave $conclave)
+    public function update(ConclaveRequest $request, $id)
     {
-        $ratings = $conclave->ratings;
+        $conclave = Auth::user()->conclaves()->findOrFail($id);
 
-        if ($ratings->count() === 0) {
-            return null;
-        }
+        $validatedData = $request->validated();
+        $conclave->update($validatedData);
 
-        $totalRating = $ratings->sum('rating');
-        $averageRating = $totalRating / $ratings->count();
+        return $this->sendResponse(ConclaveResource::collection($conclave), 'Conclave updated successfully.');
+    }
 
-        // Update therapist's overall_rating
-        $conclave->therapist->update(['overall_rating' => $averageRating]);
-
-        return $averageRating;
+    public function destroy($id)
+    {
+        $conclave = Auth::user()->conclaves()->findOrFail($id);
+        $conclave->delete();
+        return $this->sendResponse([], 'Conclave deleted successfully.');
     }
 }
